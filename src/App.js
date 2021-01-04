@@ -1,32 +1,39 @@
-import React ,{Fragment} from 'react';
+import React from 'react';
+import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
-import Users from './components/users/Users';
-import axios from 'axios';
+import Alert from './components/layout/Alert';
+import About from './components/pages/About';
+import User from './components/users/User';
+import Home from './components/pages/Home';
+import NotFound from './components/pages/NotFound';
+
+import GithubState from './context/github/GithubState';
+import AlertState from './context/alert/AlertState';
+
 import './App.css';
 
-class App extends React.Component{
-  state = {
-    users: [],
-    loading: false
-  }
+const App = () => {
 
-  async componentDidMount() {
-    this.setState({loading: true});
-    const res = await axios.get('https://api.github.com/users');
-    this.setState({ users: res.data, loading: false});
-  }
-
-  render()
-  {
-    return (
-    <Fragment className="App">
-      <Navbar />
-      <div className='container'>
-        <Users loading={this.state.loading} users={this.state.users}/>
-      </div>
-    </Fragment>
-    );
-  }
+  return (
+    <GithubState>
+      <AlertState>
+        <Router>
+          <div className="App">
+            <Navbar />
+            <div className='container'>
+              <Alert />
+              <Switch>
+                <Route exact path="/" component={Home}/>
+                <Route exact path='/about' component={About}/>
+                <Route exact path='/user/:login' component={User} />
+                <Route component={NotFound} />
+              </Switch>
+            </div>
+          </div>
+        </Router>
+      </AlertState>
+    </GithubState>
+  );
 }
 
 export default App;
